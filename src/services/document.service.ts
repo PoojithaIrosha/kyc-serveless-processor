@@ -26,4 +26,23 @@ export class DocumentService {
     doc.status = status;
     documents.set(id, doc);
   }
+
+  updateFailure(id: string, error: string) {
+    const doc = documents.get(id);
+    if (!doc) return;
+
+    doc.status = DocumentStatus.FAILED;
+    doc.error = error;
+
+    documents.set(id, doc);
+  }
+
+  findByHash(hash: string): Document | undefined {
+    for (const doc of documents.values()) {
+      if (doc.hash === hash) {
+        return doc;
+      }
+    }
+    return undefined;
+  }
 }

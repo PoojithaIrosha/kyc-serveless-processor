@@ -5,4 +5,7 @@ export interface Document {
   status: DocumentStatus;
   filePath: string;
   createdAt: string;
+  hash: string;
+  error?: string;
+  retryCount?: number;
 }
