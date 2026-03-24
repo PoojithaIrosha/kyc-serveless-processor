@@ -1,4 +1,5 @@
 import { DocumentStatus } from "../enum/document-status.enum";
+import { logger } from "../utils/logger";
 import { DocumentService } from "./document.service";
 
 const documentService = new DocumentService();
@@ -11,7 +12,7 @@ export class FileProcessingService {
     if (!doc) return;
 
     try {
-      console.log(`Processing started for ${id}`);
+      logger.info(`Processing started for ${id}`);
 
       documentService.updateStatus(id, DocumentStatus.PROCESSING);
 
@@ -25,12 +26,12 @@ export class FileProcessingService {
 
       documentService.updateStatus(id, DocumentStatus.COMPLETED);
 
-      console.log(`Processing completed for ${id}`);
+      logger.info(`Processing completed for ${id}`);
     } catch (err) {
       const retryCount = doc.retryCount ?? 0;
 
       if (retryCount < MAX_RETRIES) {
-        console.log(`Retrying ${id} (${retryCount + 1})`);
+        logger.info(`Retrying ${id} (${retryCount + 1})`);
 
         doc.retryCount = retryCount + 1;
         documentService.updateStatus(id, DocumentStatus.PROCESSING);

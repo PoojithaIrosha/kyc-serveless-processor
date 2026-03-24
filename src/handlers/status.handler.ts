@@ -1,19 +1,8 @@
 import { Request, Response } from "express";
 import { DocumentService } from "../services/document.service";
+import { DocumentController } from "../controllers/document.controller";
 
-const documentService = new DocumentService();
+const documentController = new DocumentController();
 
-export const getStatusHandler = (req: Request, res: Response) => {
-  const { id } = req.params;
-  if (Array.isArray(id)) {
-    throw new Error("Invalid id");
-  }
-  
-  const doc = documentService.get(id);
-
-  if (!doc) {
-    return res.status(404).json({ message: "Document not found" });
-  }
-
-  return res.json(doc);
-};
+export const getStatusHandler =
+  documentController.getStatus.bind(documentController);
