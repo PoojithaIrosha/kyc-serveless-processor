@@ -2,16 +2,18 @@ import { stat } from "node:fs";
 import { DocumentStatus } from "../enum/document-status.enum";
 import { Document } from "../models/document.model";
 import { isValidStatus } from "../utils/doc-status-validation.util";
+import { InMemoryDocumentRepository } from "../repositories/in-memory-document.repository";
+import { DocumentRepository } from "../repositories/document.repository";
 
-const documents = new Map<string, Document>();
+const repository: DocumentRepository = new InMemoryDocumentRepository();
 
 export class DocumentService {
   create(doc: Document) {
-    documents.set(doc.id, doc);
+    repository.create(doc);
   }
 
   get(id: string): Document | undefined {
-    return documents.get(id);
+    return repository.get(id);
   }
 
   updateStatus(id: string, status: DocumentStatus) {
@@ -20,29 +22,24 @@ export class DocumentService {
       return;
     }
 
-    const doc = documents.get(id);
+    const doc = repository.get(id);
     if (!doc) return;
 
     doc.status = status;
-    documents.set(id, doc);
+    repository.update(doc);
   }
 
   updateFailure(id: string, error: string) {
-    const doc = documents.get(id);
+    const doc = repository.get(id);
     if (!doc) return;
 
     doc.status = DocumentStatus.FAILED;
     doc.error = error;
 
-    documents.set(id, doc);
+    repository.update(doc);
   }
 
   findByHash(hash: string): Document | undefined {
-    for (const doc of documents.values()) {
-      if (doc.hash === hash) {
-        return doc;
-      }
-    }
-    return undefined;
+    return repository.findByHash(hash);
   }
 }
