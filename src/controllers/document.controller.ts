@@ -72,4 +72,26 @@ export class DocumentController {
 
     return res.json(doc);
   }
+
+  getDLQ(req: Request, res: Response) {
+    const jobs = queueService.getDLQ();
+    return res.json(jobs);
+  }
+
+  reprocess(req: Request, res: Response) {
+    const { id } = req.params;
+    if (Array.isArray(id)) {
+      throw new Error("Invalid id");
+    }
+
+    const success = queueService.reprocessFromDLQ(id);
+
+    if (!success) {
+      return res.status(404).json({ message: "Job not found in DLQ" });
+    }
+
+    documentService.updateStatus(id, DocumentStatus.PROCESSING);
+
+    return res.json({ message: "Job requeued successfully" });
+  }
 }
