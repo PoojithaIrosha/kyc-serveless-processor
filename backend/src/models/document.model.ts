@@ -8,4 +8,5 @@ export interface Document {
   hash: string;
   error?: string;
   retryCount?: number;
+  kycResult?: any;
 }
